@@ -1,31 +1,34 @@
-use rand::random_range;
+use rand::{distr::uniform::SampleUniform, random_range};
 use std::fmt;
 
+
+
 #[derive(Debug)]
-struct SimpleLine {
-    x0: f32,
-    y0: f32,
-    x1: f32,
-    y1: f32
+struct Line<T> {
+    x0: T,
+    y0: T,
+    x1: T,
+    y1: T
 }
 
+
 fn main() {
-    let l = SimpleLine::new_random();
+    let l: Line<f32> = Line::new_random();
     println!("{l}")
 }
 
-impl SimpleLine {
+impl<T: num_traits::Float + SampleUniform> Line<T> {
     fn new_random() -> Self {
         Self {
-            x0: random_range(0.0..1.0),
-            y0: random_range(0.0..1.0),
-            x1: random_range(0.0..1.0),
-            y1: random_range(0.0..1.0),
+            x0: random_range(T::zero()..T::one()),
+            y0: random_range(T::zero()..T::one()),
+            x1: random_range(T::zero()..T::one()),
+            y1: random_range(T::zero()..T::one()),
         }
     } 
 }
 
-impl fmt::Display for SimpleLine {
+impl<T: fmt::Display> fmt::Display for Line<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "({},{}->{},{}", self.x0, self.y0, self.x1, self.y1)
     }

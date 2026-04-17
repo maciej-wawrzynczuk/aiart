@@ -1,4 +1,5 @@
 use rand::random_range;
+use std::fmt;
 
 #[derive(Debug)]
 struct SimpleLine {
@@ -10,7 +11,7 @@ struct SimpleLine {
 
 fn main() {
     let l = SimpleLine::new_random();
-    println!("{l:?}")
+    println!("{l}")
 }
 
 impl SimpleLine {
@@ -24,3 +25,8 @@ impl SimpleLine {
     } 
 }
 
+impl fmt::Display for SimpleLine {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({},{}->{},{}", self.x0, self.y0, self.x1, self.y1)
+    }
+}

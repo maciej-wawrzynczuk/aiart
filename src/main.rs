@@ -1,12 +1,11 @@
 mod floats;
 use core::fmt;
 
-use num_traits::{Float, NumCast};
 use anyhow::{Context, Result};
+use num_traits::{Float, NumCast};
 
 use crate::floats::Line;
 
-#[derive(Debug)]
 struct SVGLine {
     x1: u16,
     x2: u16,
@@ -36,13 +35,13 @@ impl fmt::Display for SVGLine {
             f,
             "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"currentColor\" stroke-width=\"2\"/>",
             self.x1, self.y1, self.x2, self.y2
-            )
+        )
     }
 }
 
 fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
-        let i_as_f: F = NumCast::from(i).context("Cast error")?;
-        NumCast::from((f* i_as_f).round()).context("Cast error")
+    let i_as_f: F = NumCast::from(i).context("Cast error")?;
+    NumCast::from((f * i_as_f).round()).context("Cast error")
 }
 
 fn main() -> Result<()> {

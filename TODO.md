@@ -1,19 +1,5 @@
 # Code Review TODO
 
-## Unnecessary Code
-
-- `Point::Display` ([floats.rs:23-27](src/floats.rs#L23-L27)) — never called anywhere in the codebase.
-- `Line::Display` ([floats.rs:38-42](src/floats.rs#L38-L42)) — never called anywhere in the codebase.
-- `indoc` in `[dependencies]` ([Cargo.toml:8](Cargo.toml#L8)) — used only in tests; move to `[dev-dependencies]`.
-
-## Unnecessary Publics
-
-- `SVGLine` ([svg.rs:46](src/svg.rs#L46)) — only used within `svg.rs` and its own tests; make `pub(crate)` or private.
-- `SVGLine::new` ([svg.rs:59](src/svg.rs#L59)) — only called in tests; make `pub(crate)`.
-- `SVGLine::from_line` ([svg.rs:62](src/svg.rs#L62)) — called only from within `svg.rs`; make private.
-- `CanvasSize` and its fields `x`, `y` ([svg.rs:53-56](src/svg.rs#L53-L56)) — used only inside `svg.rs`; no reason to be `pub`.
-- `Svg::add_line` ([svg.rs:21](src/svg.rs#L21)) — only used internally and in tests; make `pub(crate)` or private.
-
 ## Tests to Create
 
 - `f2canvas` with out-of-range floats: negative values and values `> 1.0` should return an error — currently the `NumCast` cast silently fails with a generic "Cast error" message.

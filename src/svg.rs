@@ -5,6 +5,29 @@ use num_traits::{Float, NumCast};
 
 use crate::floats::Line;
 
+pub struct SVG {
+    c: CanvasSize,
+    lines: Vec<SVGLine>,
+}
+
+impl SVG {
+    pub fn new(x: u16, y:u16) -> Self {
+        Self {
+            c: CanvasSize { x, y },
+            lines: Vec::new()
+        }
+    }
+}
+
+impl fmt::Display for SVG {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        writeln!(f, "<svg viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\">",
+            self.c.x, self.c.y
+        )?;
+        writeln!(f, "</svg>")
+    }
+}
+
 pub struct SVGLine {
     x1: u16,
     x2: u16,
@@ -49,7 +72,8 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
 
 #[cfg(test)]
 mod test{
-    use crate::svg::{SVGLine, f2canvas};
+    use crate::svg::{SVG, SVGLine, f2canvas};
+    use indoc::indoc;
 
     #[test]
     fn f2c_boundaries() {
@@ -69,5 +93,15 @@ mod test{
             .to_string();
         let result = l.to_string();
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn svg_empty() {
+        let s = SVG::new(10, 20);
+        let expected = indoc! {"
+            <svg viewBox=\"0 0 10 20\" xmlns=\"http://www.w3.org/2000/svg\">
+            </svg>
+        "};
+        assert_eq!(s.to_string(), expected.to_string());
     }
 }

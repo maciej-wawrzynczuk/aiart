@@ -21,6 +21,12 @@ impl Svg {
     pub fn add_line(&mut self, l: SVGLine) {
         self.lines.push(l);
     }
+
+    pub fn add_float_line<T: Float>(&mut self, l: Line<T>) -> Result<()> {
+        let cl = SVGLine::from_line(l, &self.c)?;
+        self.add_line(cl);
+        Ok(())
+    }
 }
 
 impl fmt::Display for Svg {
@@ -53,7 +59,7 @@ impl SVGLine {
     pub fn new(x1: u16, x2: u16, y1: u16, y2: u16) -> Self {
         Self { x1, x2, y1, y2 }
     }
-    pub fn from_line<T: Float>(l: Line<T>, c: CanvasSize) -> Result<Self> {
+    pub fn from_line<T: Float>(l: Line<T>, c: &CanvasSize) -> Result<Self> {
         Ok(Self {
             x1: f2canvas(l.start.x, c.x)?,
             y1: f2canvas(l.start.y, c.y)?,

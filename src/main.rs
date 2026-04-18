@@ -1,10 +1,9 @@
 mod floats;
 mod svg;
 
-use anyhow::Result;
 use crate::floats::Line;
 use crate::svg::{CanvasSize, SVGLine, Svg};
-
+use anyhow::Result;
 
 fn main() -> Result<()> {
     let l: Line<f32> = Line::new_random();

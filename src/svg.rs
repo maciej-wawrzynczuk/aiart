@@ -11,10 +11,10 @@ pub struct Svg {
 }
 
 impl Svg {
-    pub fn new(x: u16, y:u16) -> Self {
+    pub fn new(x: u16, y: u16) -> Self {
         Self {
             c: CanvasSize { x, y },
-            lines: Vec::new()
+            lines: Vec::new(),
         }
     }
 
@@ -25,7 +25,9 @@ impl Svg {
 
 impl fmt::Display for Svg {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        writeln!(f, "<svg viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\">",
+        writeln!(
+            f,
+            "<svg viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\">",
             self.c.x, self.c.y
         )?;
         for l in &self.lines {
@@ -49,7 +51,7 @@ pub struct CanvasSize {
 
 impl SVGLine {
     pub fn new(x1: u16, x2: u16, y1: u16, y2: u16) -> Self {
-        Self {x1, x2, y1, y2}
+        Self { x1, x2, y1, y2 }
     }
     pub fn from_line<T: Float>(l: Line<T>, c: CanvasSize) -> Result<Self> {
         Ok(Self {
@@ -76,10 +78,9 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
     NumCast::from((f * i_as_f).round()).context("Cast error")
 }
 
-
 #[cfg(test)]
-mod test{
-    use crate::svg::{Svg, SVGLine, f2canvas};
+mod test {
+    use crate::svg::{SVGLine, Svg, f2canvas};
     use indoc::indoc;
 
     #[test]
@@ -96,8 +97,9 @@ mod test{
     #[test]
     fn display_line() {
         let l = SVGLine::new(0, 1, 2, 3);
-        let expected = "<line x1=\"0\" y1=\"2\" x2=\"1\" y2=\"3\" stroke=\"black\" stroke-width=\"2\"/>"
-            .to_string();
+        let expected =
+            "<line x1=\"0\" y1=\"2\" x2=\"1\" y2=\"3\" stroke=\"black\" stroke-width=\"2\"/>"
+                .to_string();
         let result = l.to_string();
         assert_eq!(result, expected);
     }
@@ -112,7 +114,7 @@ mod test{
         assert_eq!(s.to_string(), expected.to_string());
     }
 
-        #[test]
+    #[test]
     fn svg_one() {
         let mut s = Svg::new(10, 20);
         let l = SVGLine::new(12, 56, 34, 67);

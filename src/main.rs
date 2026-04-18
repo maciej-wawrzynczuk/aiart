@@ -2,13 +2,14 @@ use rand::{distr::uniform::SampleUniform, random_range};
 use std::fmt;
 
 
+struct Point<T> {
+    x: T,
+    y: T
+}
 
-#[derive(Debug)]
 struct Line<T> {
-    x0: T,
-    y0: T,
-    x1: T,
-    y1: T
+    start: Point<T>,
+    end: Point<T>
 }
 
 
@@ -17,19 +18,32 @@ fn main() {
     println!("{l}")
 }
 
+impl<T: num_traits::Float + SampleUniform> Point<T> {
+    fn new_random() -> Self {
+        Self {
+            x: random_range(T::zero()..T::one()),
+            y: random_range(T::zero()..T::one())
+        }
+    }
+}
+
+impl<T: fmt::Display> fmt::Display for Point<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({},{})", self.x, self.y)
+    }
+}
+
 impl<T: num_traits::Float + SampleUniform> Line<T> {
     fn new_random() -> Self {
         Self {
-            x0: random_range(T::zero()..T::one()),
-            y0: random_range(T::zero()..T::one()),
-            x1: random_range(T::zero()..T::one()),
-            y1: random_range(T::zero()..T::one()),
+            start: Point::new_random(),
+            end: Point::new_random()
         }
     } 
 }
 
 impl<T: fmt::Display> fmt::Display for Line<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "({},{}->{},{}", self.x0, self.y0, self.x1, self.y1)
+        write!(f, "({}->{})", self.start, self.end)
     }
 }

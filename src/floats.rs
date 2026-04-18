@@ -1,22 +1,21 @@
 use rand::{distr::uniform::SampleUniform, random_range};
 use std::fmt;
 
-struct Point<T> {
-    x: T,
-    y: T
+pub struct Point<T> {
+    pub x: T,
+    pub y: T,
 }
 
 pub struct Line<T> {
-    start: Point<T>,
-    end: Point<T>
+    pub start: Point<T>,
+    pub end: Point<T>,
 }
-
 
 impl<T: num_traits::Float + SampleUniform> Point<T> {
     fn new_random() -> Self {
         Self {
             x: random_range(T::zero()..T::one()),
-            y: random_range(T::zero()..T::one())
+            y: random_range(T::zero()..T::one()),
         }
     }
 }
@@ -31,9 +30,9 @@ impl<T: num_traits::Float + SampleUniform> Line<T> {
     pub fn new_random() -> Self {
         Self {
             start: Point::new_random(),
-            end: Point::new_random()
+            end: Point::new_random(),
         }
-    } 
+    }
 }
 
 impl<T: fmt::Display> fmt::Display for Line<T> {

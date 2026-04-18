@@ -42,3 +42,20 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
     let i_as_f: F = NumCast::from(i).context("Cast error")?;
     NumCast::from((f * i_as_f).round()).context("Cast error")
 }
+
+
+#[cfg(test)]
+mod test{
+    use crate::svg::f2canvas;
+
+    #[test]
+    fn f2c_boundaries() {
+        assert_eq!(f2canvas(0.0, 100).unwrap(), 0);
+        assert_eq!(f2canvas(1.0, 100).unwrap(), 100);
+    }
+
+    #[test]
+    fn f2c_mid() {
+        assert_eq!(f2canvas(0.5, 100).unwrap(), 50);
+    }
+}

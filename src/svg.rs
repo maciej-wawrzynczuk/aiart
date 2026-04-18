@@ -11,28 +11,13 @@ pub struct Svg {
 }
 
 impl Svg {
-    pub fn new(x: u16, y: u16) -> Self {
-        Self {
-            c: CanvasSize { x, y },
-            lines: Vec::new(),
-        }
-    }
-
-    fn add_line(&mut self, l: SVGLine) {
-        self.lines.push(l);
-    }
-
-    fn add_float_line<T: Float>(&mut self, l: &Line<T>) -> Result<()> {
-        let cl = SVGLine::from_line(l, &self.c)?;
-        self.add_line(cl);
-        Ok(())
-    }
-
-    pub fn add_float_lines<T: Float>(&mut self, ls: &[Line<T>]) -> Result<()> {
-        for l in ls {
-            self.add_float_line(l)?;
-        }
-        Ok(())
+    pub fn new<F: Float>(x: u16, y: u16, ls: &[Line<F>]) -> Result<Self> {
+        let c = CanvasSize { x, y };
+        let lines: Vec<SVGLine> = ls
+            .iter()
+            .map(|l| SVGLine::from_line(l, &c))
+            .collect::<Result<Vec<_>>>()?;
+        Ok(Self { c, lines })
     }
 }
 
@@ -90,6 +75,8 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
 
 #[cfg(test)]
 mod test {
+    use crate::Line;
+    use crate::floats::Point;
     use crate::svg::{SVGLine, Svg, f2canvas};
     use indoc::indoc;
 
@@ -108,8 +95,8 @@ mod test {
     fn display_line() {
         let l = SVGLine {
             x1: 0,
-            y1: 1,
-            x2: 2,
+            y1: 2,
+            x2: 1,
             y2: 3,
         };
         let expected =
@@ -121,7 +108,7 @@ mod test {
 
     #[test]
     fn svg_empty() {
-        let s = Svg::new(10, 20);
+        let s = Svg::new(10, 20, &[] as &[Line<f32>]).unwrap();
         let expected = indoc! {"
             <svg viewBox=\"0 0 10 20\" xmlns=\"http://www.w3.org/2000/svg\">
             </svg>
@@ -131,17 +118,14 @@ mod test {
 
     #[test]
     fn svg_one() {
-        let mut s = Svg::new(10, 20);
-        let l = SVGLine {
-            x1: 12,
-            y1: 56,
-            x2: 34,
-            y2: 67,
-        };
-        s.add_line(l);
+        let ls: Vec<Line<f32>> = vec![Line {
+            start: Point { x: 0.25, y: 0.25 },
+            end: Point { x: 0.75, y: 0.75 },
+        }];
+        let s = Svg::new(100, 100, &ls).unwrap();
         let expected = indoc! {"
-            <svg viewBox=\"0 0 10 20\" xmlns=\"http://www.w3.org/2000/svg\">
-            <line x1=\"12\" y1=\"34\" x2=\"56\" y2=\"67\" stroke=\"black\" stroke-width=\"2\"/>
+            <svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\">
+            <line x1=\"25\" y1=\"25\" x2=\"75\" y2=\"75\" stroke=\"black\" stroke-width=\"2\"/>
             </svg>
         "};
         assert_eq!(s.to_string(), expected.to_string());

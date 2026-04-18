@@ -5,25 +5,32 @@ use num_traits::{Float, NumCast};
 
 use crate::floats::Line;
 
-pub struct SVG {
+pub struct Svg {
     c: CanvasSize,
     lines: Vec<SVGLine>,
 }
 
-impl SVG {
+impl Svg {
     pub fn new(x: u16, y:u16) -> Self {
         Self {
             c: CanvasSize { x, y },
             lines: Vec::new()
         }
     }
+
+    pub fn add_line(&mut self, l: SVGLine) {
+        self.lines.push(l);
+    }
 }
 
-impl fmt::Display for SVG {
+impl fmt::Display for Svg {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         writeln!(f, "<svg viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\">",
             self.c.x, self.c.y
         )?;
+        for l in &self.lines {
+            writeln!(f, "{l}")?
+        }
         writeln!(f, "</svg>")
     }
 }
@@ -72,7 +79,7 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
 
 #[cfg(test)]
 mod test{
-    use crate::svg::{SVG, SVGLine, f2canvas};
+    use crate::svg::{Svg, SVGLine, f2canvas};
     use indoc::indoc;
 
     #[test]
@@ -97,9 +104,22 @@ mod test{
 
     #[test]
     fn svg_empty() {
-        let s = SVG::new(10, 20);
+        let s = Svg::new(10, 20);
         let expected = indoc! {"
             <svg viewBox=\"0 0 10 20\" xmlns=\"http://www.w3.org/2000/svg\">
+            </svg>
+        "};
+        assert_eq!(s.to_string(), expected.to_string());
+    }
+
+        #[test]
+    fn svg_one() {
+        let mut s = Svg::new(10, 20);
+        let l = SVGLine::new(12, 56, 34, 67);
+        s.add_line(l);
+        let expected = indoc! {"
+            <svg viewBox=\"0 0 10 20\" xmlns=\"http://www.w3.org/2000/svg\">
+            <line x1=\"12\" y1=\"34\" x2=\"56\" y2=\"67\" stroke=\"black\" stroke-width=\"2\"/>
             </svg>
         "};
         assert_eq!(s.to_string(), expected.to_string());

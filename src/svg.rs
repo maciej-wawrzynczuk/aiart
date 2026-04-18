@@ -18,13 +18,20 @@ impl Svg {
         }
     }
 
-    pub fn add_line(&mut self, l: SVGLine) {
+    fn add_line(&mut self, l: SVGLine) {
         self.lines.push(l);
     }
 
-    pub fn add_float_line<T: Float>(&mut self, l: Line<T>) -> Result<()> {
+    fn add_float_line<T: Float>(&mut self, l: &Line<T>) -> Result<()> {
         let cl = SVGLine::from_line(l, &self.c)?;
         self.add_line(cl);
+        Ok(())
+    }
+
+    pub fn add_float_lines<T: Float>(&mut self, ls: &[Line<T>]) -> Result<()> {
+        for l in ls {
+            self.add_float_line(l)?;
+        }
         Ok(())
     }
 }
@@ -43,23 +50,20 @@ impl fmt::Display for Svg {
     }
 }
 
-pub struct SVGLine {
-    x1: u16,
-    x2: u16,
-    y1: u16,
-    y2: u16,
+pub(crate) struct SVGLine {
+    pub(crate) x1: u16,
+    pub(crate) x2: u16,
+    pub(crate) y1: u16,
+    pub(crate) y2: u16,
 }
 
-pub struct CanvasSize {
-    pub x: u16,
-    pub y: u16,
+struct CanvasSize {
+    x: u16,
+    y: u16,
 }
 
 impl SVGLine {
-    pub fn new(x1: u16, x2: u16, y1: u16, y2: u16) -> Self {
-        Self { x1, x2, y1, y2 }
-    }
-    pub fn from_line<T: Float>(l: Line<T>, c: &CanvasSize) -> Result<Self> {
+    fn from_line<T: Float>(l: &Line<T>, c: &CanvasSize) -> Result<Self> {
         Ok(Self {
             x1: f2canvas(l.start.x, c.x)?,
             y1: f2canvas(l.start.y, c.y)?,
@@ -102,7 +106,12 @@ mod test {
 
     #[test]
     fn display_line() {
-        let l = SVGLine::new(0, 1, 2, 3);
+        let l = SVGLine {
+            x1: 0,
+            y1: 1,
+            x2: 2,
+            y2: 3,
+        };
         let expected =
             "<line x1=\"0\" y1=\"2\" x2=\"1\" y2=\"3\" stroke=\"black\" stroke-width=\"2\"/>"
                 .to_string();
@@ -123,7 +132,12 @@ mod test {
     #[test]
     fn svg_one() {
         let mut s = Svg::new(10, 20);
-        let l = SVGLine::new(12, 56, 34, 67);
+        let l = SVGLine {
+            x1: 12,
+            y1: 56,
+            x2: 34,
+            y2: 67,
+        };
         s.add_line(l);
         let expected = indoc! {"
             <svg viewBox=\"0 0 10 20\" xmlns=\"http://www.w3.org/2000/svg\">

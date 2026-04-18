@@ -1,5 +1,10 @@
 # Code Review TODO
 
+## Real TODO
+
+- Replace add_float_line with SIMD friendly
+- Replace SvgLine with Line.
+
 ## Tests to Create
 
 - `f2canvas` with out-of-range floats: negative values and values `> 1.0` should return an error — currently the `NumCast` cast silently fails with a generic "Cast error" message.
@@ -17,5 +22,5 @@
 ## Three Potential Improvements
 
 1. **Validate float coordinates at the boundary** — add a guard in `add_float_line` or `from_line` that checks `0.0 <= coord <= 1.0` before conversion, returning a descriptive error (e.g. `"x1 out of range: 1.3"`).
-2. **Normalise `SVGLine::new` parameter order to `(x1, y1, x2, y2)`** — matches SVG attribute order and the mental model of "start point, end point", reducing the chance of silent argument swaps.
+2. **Normalize `SVGLine::new` parameter order to `(x1, y1, x2, y2)`** — matches SVG attribute order and the mental model of "start point, end point", reducing the chance of silent argument swaps.
 3. **Replace the `println!` output with file I/O** — writing SVG to stdout forces shell redirection and makes the tool hard to compose; accepting an output path (or writing to a named file) makes intent explicit and easier to test.

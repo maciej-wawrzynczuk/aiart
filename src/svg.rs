@@ -19,6 +19,15 @@ impl Svg {
             .collect::<Result<Vec<_>>>()?;
         Ok(Self { c, lines })
     }
+
+    pub fn new4<F: Float>(x: u16, y: u16, s: &[F]) -> Result<Self> {
+        let c = CanvasSize { x, y };
+        let lines: Vec<SVGLine> = s.chunks_exact(4)
+            .map(|x| SVGLine::from_4(x, &c))
+            .collect::<Result<Vec<_>>>()?;
+        
+        Ok(Self {c, lines })
+    }
 }
 
 impl fmt::Display for Svg {

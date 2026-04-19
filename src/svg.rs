@@ -3,8 +3,6 @@ use core::fmt;
 use anyhow::{Context, Result, ensure};
 use num_traits::{Float, NumCast};
 
-use crate::floats::Line;
-
 pub struct Svg {
     c: CanvasSize,
     lines: Vec<SVGLine>,
@@ -48,15 +46,6 @@ struct CanvasSize {
 }
 
 impl SVGLine {
-    fn from_line<T: Float>(l: &Line<T>, c: &CanvasSize) -> Result<Self> {
-        Ok(Self {
-            x1: f2canvas(l.start.x, c.x)?,
-            y1: f2canvas(l.start.y, c.y)?,
-            x2: f2canvas(l.end.x, c.x)?,
-            y2: f2canvas(l.end.y, c.y)?,
-        })
-    }
-
     fn from_4<T: Float>(s: &[T], c: &CanvasSize) -> Result<Self> {
         ensure!(s.len() == 4, "Not enough data");
         let x1 = f2canvas(s[0], c.x)?;
@@ -85,9 +74,6 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
 
 #[cfg(test)]
 mod test {
-
-    use crate::svg::Line;
-    use crate::floats::Point;
     use crate::svg::{CanvasSize, SVGLine, Svg, f2canvas};
     use indoc::indoc;
 

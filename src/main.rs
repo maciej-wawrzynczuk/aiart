@@ -1,4 +1,3 @@
-mod floats;
 mod svg;
 
 use crate::svg::Svg;

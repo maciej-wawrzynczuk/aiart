@@ -1,6 +1,6 @@
 use core::fmt;
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, ensure};
 use num_traits::{Float, NumCast};
 
 use crate::floats::Line;
@@ -56,6 +56,16 @@ impl SVGLine {
             y2: f2canvas(l.end.y, c.y)?,
         })
     }
+
+    fn from_4<T: Float>(s: &[T], c: &CanvasSize) -> Result<Self> {
+        ensure!(s.len() == 4, "Not enough data");
+        let x1 = f2canvas(s[0], c.x)?;
+        let y1 = f2canvas(s[1], c.y)?;
+        let x2 = f2canvas(s[2], c.x)?;
+        let y2 = f2canvas(s[3], c.y)?;
+
+        Ok(Self { x1, y1, x2, y2})
+    }
 }
 
 impl fmt::Display for SVGLine {
@@ -77,7 +87,7 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
 mod test {
     use crate::Line;
     use crate::floats::Point;
-    use crate::svg::{SVGLine, Svg, f2canvas};
+    use crate::svg::{CanvasSize, SVGLine, Svg, f2canvas};
     use indoc::indoc;
 
     #[test]
@@ -104,6 +114,18 @@ mod test {
                 .to_string();
         let result = l.to_string();
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn line_from_4() {
+        let c = CanvasSize { x: 100, y: 100};
+        let data: Vec<f32> = vec! [0.1, 0.2, 0.3, 0.4];
+        let sut = SVGLine::from_4(&data, &c).unwrap();
+        
+        assert_eq!(sut.x1, 10);
+        assert_eq!(sut.y1, 20);
+        assert_eq!(sut.x2, 30);
+        assert_eq!(sut.y2, 40);
     }
 
     #[test]

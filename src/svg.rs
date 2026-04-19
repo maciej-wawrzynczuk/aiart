@@ -11,15 +11,6 @@ pub struct Svg {
 }
 
 impl Svg {
-    pub fn new<F: Float>(x: u16, y: u16, ls: &[Line<F>]) -> Result<Self> {
-        let c = CanvasSize { x, y };
-        let lines: Vec<SVGLine> = ls
-            .iter()
-            .map(|l| SVGLine::from_line(l, &c))
-            .collect::<Result<Vec<_>>>()?;
-        Ok(Self { c, lines })
-    }
-
     pub fn new4<F: Float>(x: u16, y: u16, s: &[F]) -> Result<Self> {
         let c = CanvasSize { x, y };
         let lines: Vec<SVGLine> = s.chunks_exact(4)
@@ -94,7 +85,8 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
 
 #[cfg(test)]
 mod test {
-    use crate::Line;
+
+    use crate::svg::Line;
     use crate::floats::Point;
     use crate::svg::{CanvasSize, SVGLine, Svg, f2canvas};
     use indoc::indoc;
@@ -139,7 +131,7 @@ mod test {
 
     #[test]
     fn svg_empty() {
-        let s = Svg::new(10, 20, &[] as &[Line<f32>]).unwrap();
+        let s = Svg::new4(10, 20, &[] as &[f32]).unwrap();
         let expected = indoc! {"
             <svg viewBox=\"0 0 10 20\" xmlns=\"http://www.w3.org/2000/svg\">
             </svg>
@@ -149,11 +141,8 @@ mod test {
 
     #[test]
     fn svg_one() {
-        let ls: Vec<Line<f32>> = vec![Line {
-            start: Point { x: 0.25, y: 0.25 },
-            end: Point { x: 0.75, y: 0.75 },
-        }];
-        let s = Svg::new(100, 100, &ls).unwrap();
+        let data: Vec<f32> = vec![0.25, 0.25, 0.75, 0.75];
+        let s = Svg::new4(100, 100, &data).unwrap();
         let expected = indoc! {"
             <svg viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\">
             <line x1=\"25\" y1=\"25\" x2=\"75\" y2=\"75\" stroke=\"black\" stroke-width=\"2\"/>

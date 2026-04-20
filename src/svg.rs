@@ -37,6 +37,19 @@ impl SvgLines {
     }
 }
 
+impl fmt::Display for SvgLines {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for n in 0..self.x1.len() {
+            write!(
+                f,
+                "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"black\" stroke-width=\"2\"/>",
+                self.x1[n], self.y1[n], self.x2[n], self.y2[n]
+            )?;
+        }
+        Ok(())
+    }
+}
+
 impl Svg {
     pub fn new4<F: Float>(x: u16, y: u16, s: &[F]) -> Result<Self> {
         let c = CanvasSize { x, y };
@@ -69,7 +82,7 @@ pub(crate) struct SVGLine {
     pub(crate) y2: u16,
 }
 
-struct CanvasSize {
+pub(crate) struct CanvasSize {
     x: u16,
     y: u16,
 }
@@ -103,7 +116,7 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
 
 #[cfg(test)]
 mod test {
-    use crate::svg::{CanvasSize, SVGLine, Svg, f2canvas};
+    use crate::svg::{CanvasSize, SVGLine, Svg, SvgLines, f2canvas};
     use indoc::indoc;
 
     #[test]
@@ -131,6 +144,20 @@ mod test {
         let result = l.to_string();
         assert_eq!(result, expected);
     }
+
+    #[test]
+    fn display_lines() {
+        let data: Vec<f32> = vec![0.1, 0.2, 0.3, 0.4];
+        let c = CanvasSize { x:100, y: 100 };
+        let sut = SvgLines::new(&data, &c).unwrap();
+        let expected =
+            "<line x1=\"10\" y1=\"20\" x2=\"30\" y2=\"40\" stroke=\"black\" stroke-width=\"2\"/>"
+                .to_string();
+        let result = sut.to_string();
+        assert_eq!(result, expected);
+        
+    }
+
 
     #[test]
     fn line_from_4() {

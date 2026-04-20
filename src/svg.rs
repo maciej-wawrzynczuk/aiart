@@ -8,6 +8,35 @@ pub struct Svg {
     lines: Vec<SVGLine>,
 }
 
+pub(crate) struct SvgLines {
+    pub(crate) x1: Vec<u16>,
+    pub(crate) y1: Vec<u16>,
+    pub(crate) x2: Vec<u16>,
+    pub(crate) y2: Vec<u16>,
+}
+
+impl SvgLines {
+    // TODO: tests
+    pub(crate) fn new<F: Float>(s: &[F], c: &CanvasSize) -> Result<Self> {
+        let size = s.len() / 4;
+        let mut result = SvgLines {
+            x1: Vec::with_capacity(size),
+            x2: Vec::with_capacity(size),
+            y1: Vec::with_capacity(size),
+            y2: Vec::with_capacity(size),
+        };
+
+        for batch in s.chunks_exact(4) {
+            result.x1.push(f2canvas(batch[0], c.x)?);
+            result.y1.push(f2canvas(batch[1], c.y)?);
+            result.x2.push(f2canvas(batch[2], c.x)?);
+            result.y2.push(f2canvas(batch[3], c.y)?);
+        }
+
+        Ok(result)
+    }
+}
+
 impl Svg {
     pub fn new4<F: Float>(x: u16, y: u16, s: &[F]) -> Result<Self> {
         let c = CanvasSize { x, y };

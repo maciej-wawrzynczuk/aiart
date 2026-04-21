@@ -40,7 +40,7 @@ impl SvgLines {
 impl fmt::Display for SvgLines {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         for n in 0..self.x1.len() {
-            write!(
+            writeln!(
                 f,
                 "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"black\" stroke-width=\"2\"/>",
                 self.x1[n], self.y1[n], self.x2[n], self.y2[n]
@@ -151,11 +151,23 @@ mod test {
         let c = CanvasSize { x:100, y: 100 };
         let sut = SvgLines::new(&data, &c).unwrap();
         let expected =
-            "<line x1=\"10\" y1=\"20\" x2=\"30\" y2=\"40\" stroke=\"black\" stroke-width=\"2\"/>"
+            "<line x1=\"10\" y1=\"20\" x2=\"30\" y2=\"40\" stroke=\"black\" stroke-width=\"2\"/>\n"
                 .to_string();
         let result = sut.to_string();
-        assert_eq!(result, expected);
-        
+        assert_eq!(result, expected);        
+    }
+
+    #[test]
+    fn diplay_lines_more() {
+        let data:  Vec<f32> = vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
+        let c = CanvasSize { x: 100, y: 100 };
+        let sut = SvgLines::new(&data, &c).unwrap();
+        let expected = indoc! {"\
+            <line x1=\"10\" y1=\"20\" x2=\"30\" y2=\"40\" stroke=\"black\" stroke-width=\"2\"/>
+            <line x1=\"50\" y1=\"60\" x2=\"70\" y2=\"80\" stroke=\"black\" stroke-width=\"2\"/>
+        "};
+
+        assert_eq!(sut.to_string(), expected.to_string());
     }
 
 

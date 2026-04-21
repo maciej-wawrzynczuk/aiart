@@ -1,11 +1,11 @@
 use core::fmt;
 
-use anyhow::{Context, Result, ensure};
+use anyhow::{Context, Result};
 use num_traits::{Float, NumCast};
 
 pub struct Svg {
     c: CanvasSize,
-    lines: Vec<SVGLine>,
+    lines: SvgLines,
 }
 
 pub(crate) struct SvgLines {
@@ -16,7 +16,6 @@ pub(crate) struct SvgLines {
 }
 
 impl SvgLines {
-    // TODO: tests
     pub(crate) fn new<F: Float>(s: &[F], c: &CanvasSize) -> Result<Self> {
         let size = s.len() / 4;
         let mut result = SvgLines {
@@ -53,10 +52,7 @@ impl fmt::Display for SvgLines {
 impl Svg {
     pub fn new4<F: Float>(x: u16, y: u16, s: &[F]) -> Result<Self> {
         let c = CanvasSize { x, y };
-        let lines: Vec<SVGLine> = s.chunks_exact(4)
-            .map(|x| SVGLine::from_4(x, &c))
-            .collect::<Result<Vec<_>>>()?;
-        
+        let lines = SvgLines::new(s, &c)?;
         Ok(Self {c, lines })
     }
 }
@@ -68,18 +64,9 @@ impl fmt::Display for Svg {
             "<svg viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\">",
             self.c.x, self.c.y
         )?;
-        for l in &self.lines {
-            writeln!(f, "{l}")?
-        }
+        write!(f, "{}", self.lines)?;
         writeln!(f, "</svg>")
     }
-}
-
-pub(crate) struct SVGLine {
-    pub(crate) x1: u16,
-    pub(crate) x2: u16,
-    pub(crate) y1: u16,
-    pub(crate) y2: u16,
 }
 
 pub(crate) struct CanvasSize {
@@ -87,27 +74,6 @@ pub(crate) struct CanvasSize {
     y: u16,
 }
 
-impl SVGLine {
-    fn from_4<T: Float>(s: &[T], c: &CanvasSize) -> Result<Self> {
-        ensure!(s.len() == 4, "Not enough data");
-        let x1 = f2canvas(s[0], c.x)?;
-        let y1 = f2canvas(s[1], c.y)?;
-        let x2 = f2canvas(s[2], c.x)?;
-        let y2 = f2canvas(s[3], c.y)?;
-
-        Ok(Self { x1, y1, x2, y2})
-    }
-}
-
-impl fmt::Display for SVGLine {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            f,
-            "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"black\" stroke-width=\"2\"/>",
-            self.x1, self.y1, self.x2, self.y2
-        )
-    }
-}
 
 fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
     let i_as_f: F = NumCast::from(i).context("Cast error")?;
@@ -116,7 +82,7 @@ fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
 
 #[cfg(test)]
 mod test {
-    use crate::svg::{CanvasSize, SVGLine, Svg, SvgLines, f2canvas};
+    use crate::svg::{CanvasSize, Svg, SvgLines, f2canvas};
     use indoc::indoc;
 
     #[test]
@@ -128,21 +94,6 @@ mod test {
     #[test]
     fn f2c_mid() {
         assert_eq!(f2canvas(0.5, 100).unwrap(), 50);
-    }
-
-    #[test]
-    fn display_line() {
-        let l = SVGLine {
-            x1: 0,
-            y1: 2,
-            x2: 1,
-            y2: 3,
-        };
-        let expected =
-            "<line x1=\"0\" y1=\"2\" x2=\"1\" y2=\"3\" stroke=\"black\" stroke-width=\"2\"/>"
-                .to_string();
-        let result = l.to_string();
-        assert_eq!(result, expected);
     }
 
     #[test]
@@ -168,19 +119,6 @@ mod test {
         "};
 
         assert_eq!(sut.to_string(), expected.to_string());
-    }
-
-
-    #[test]
-    fn line_from_4() {
-        let c = CanvasSize { x: 100, y: 100};
-        let data: Vec<f32> = vec! [0.1, 0.2, 0.3, 0.4];
-        let sut = SVGLine::from_4(&data, &c).unwrap();
-        
-        assert_eq!(sut.x1, 10);
-        assert_eq!(sut.y1, 20);
-        assert_eq!(sut.x2, 30);
-        assert_eq!(sut.y2, 40);
     }
 
     #[test]

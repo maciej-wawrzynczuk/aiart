@@ -53,7 +53,7 @@ impl Svg {
     pub fn new4<F: Float>(x: u16, y: u16, s: &[F]) -> Result<Self> {
         let c = CanvasSize { x, y };
         let lines = SvgLines::new(s, &c)?;
-        Ok(Self {c, lines })
+        Ok(Self { c, lines })
     }
 }
 
@@ -73,7 +73,6 @@ pub(crate) struct CanvasSize {
     x: u16,
     y: u16,
 }
-
 
 fn f2canvas<F: Float, I: NumCast>(f: F, i: I) -> Result<I> {
     let i_as_f: F = NumCast::from(i).context("Cast error")?;
@@ -99,18 +98,18 @@ mod test {
     #[test]
     fn display_lines() {
         let data: Vec<f32> = vec![0.1, 0.2, 0.3, 0.4];
-        let c = CanvasSize { x:100, y: 100 };
+        let c = CanvasSize { x: 100, y: 100 };
         let sut = SvgLines::new(&data, &c).unwrap();
         let expected =
             "<line x1=\"10\" y1=\"20\" x2=\"30\" y2=\"40\" stroke=\"black\" stroke-width=\"2\"/>\n"
                 .to_string();
         let result = sut.to_string();
-        assert_eq!(result, expected);        
+        assert_eq!(result, expected);
     }
 
     #[test]
     fn diplay_lines_more() {
-        let data:  Vec<f32> = vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
+        let data: Vec<f32> = vec![0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8];
         let c = CanvasSize { x: 100, y: 100 };
         let sut = SvgLines::new(&data, &c).unwrap();
         let expected = indoc! {"\

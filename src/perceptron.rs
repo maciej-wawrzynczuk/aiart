@@ -1,8 +1,8 @@
-use num_traits::Float;
 use ndarray::{Array1, Array2, Axis};
+use num_traits::Float;
 
 pub struct Perceptron<F: Float> {
-//    pub(crate) b: Array1<F>,
+    //    pub(crate) b: Array1<F>,
     pub(crate) w: Array2<F>,
 }
 
@@ -16,17 +16,22 @@ impl<F: Float> Perceptron<F> {
 
 #[cfg(test)]
 mod test {
-    use ndarray::{Array2, array};
+    use ndarray::array;
 
     use crate::perceptron::Perceptron;
 
     #[test]
     fn p_1() {
-        let ps: Perceptron<f32> = Perceptron {
-            w: array![[2.0]]
-        };
+        let ps: Perceptron<f32> = Perceptron { w: array![[2.0]] };
         let i = array![3.0];
 
         assert_eq!(ps.output(&i), array![6.0]);
+    }
+
+    #[test]
+    fn p_2() {
+        let ps: Perceptron<f32> = Perceptron {
+            w: array![[1.0, 2.0], [3.0, 4.0]],
+        };
     }
 }

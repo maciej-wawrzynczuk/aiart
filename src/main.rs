@@ -1,4 +1,5 @@
 mod svg;
+mod perceptron;
 
 use crate::svg::Svg;
 use anyhow::Result;

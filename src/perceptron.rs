@@ -33,5 +33,9 @@ mod test {
         let ps: Perceptron<f32> = Perceptron {
             w: array![[1.0, 2.0], [3.0, 4.0]],
         };
+        let i = array![5.0, 6.0];
+        let expected = array![17.0, 39.0];
+
+        assert_eq!(ps.output(&i), expected);
     }
 }

@@ -7,7 +7,7 @@ pub struct Perceptron<F: Float> {
 }
 
 impl<F: Float> Perceptron<F> {
-    pub(crate) fn intermed(&self, input: &Array1<F>) -> Array1<F> {
+    fn intermed(&self, input: &Array1<F>) -> Array1<F> {
         let input2d = input.view().insert_axis(Axis(0));
         let a1 = &input2d * &self.w;
         let weighted = a1.sum_axis(Axis(0));
@@ -27,7 +27,7 @@ fn sigmoid<F: Float>(x: F) -> F {
 mod test {
     use ndarray::array;
 
-    use crate::perceptron::Perceptron;
+    use super::*;
 
     #[test]
     fn p_2() {
@@ -39,5 +39,10 @@ mod test {
         let expected = array![14.0, 32.0];
 
         assert_eq!(ps.intermed(&i), expected);
+    }
+
+    #[test]
+    fn sigm() {
+        assert_eq!(sigmoid(0.0), 0.5);
     }
 }

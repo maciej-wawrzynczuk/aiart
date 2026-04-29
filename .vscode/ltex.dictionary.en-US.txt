@@ -1,3 +1,10 @@
 SIMD
 TODO
 SvgLine
+playsinline
+mediaDevices
+getUserMedia
+doctype
+const
+getElementById
+srcObject

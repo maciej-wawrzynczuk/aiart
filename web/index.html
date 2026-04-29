@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test</title>
+  </head>
+  <body>
+    <div>
+      <video id="video" autoplay playsinline style="width: 100%" />
+    </div>
+    <script>
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          const video = document.getElementById("video");
+          video.srcObject = stream;
+        })
+        .catch((err) => {
+          console.error("Error accessing camera:", err);
+        });
+    </script>
+    <p>Hello</p>
+  </body>
+</html>

@@ -1,4 +1,8 @@
 :8880 {
 	root * ./web
 	file_server
+	log {
+		format json
+		output net udp/localhost:5140
+	}
 }
